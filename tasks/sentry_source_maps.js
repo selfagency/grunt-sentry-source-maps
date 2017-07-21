@@ -7,17 +7,21 @@
  */
 
 'use strict'
+require('core-js')
 require('whatwg-fetch')
 
+const cwd      = process.cwd()
 const btoa     = require('abab').btoa
 const desc     = 'Automatically creates release info for and pushes JS source maps to Sentry.io.'
 const fs       = require('fs')
-const git      = require('git-last-commit')
+const Git      = require('nodegit')
 const sha1File = require('sha1-file')
-const version  = require('package.json').version
+const version  = require(`${cwd}/package.json`).version
 
 module.exports = function(grunt) {
-  grunt.registerMultiTask('sentry_source_maps', desc, () => {
+  grunt.registerTask('sentry_source_maps', desc, () => {
+    const options = grunt.task.current.options()
+    const files = options.sourceFiles
     const release = btoa(`${options.project} v${version}`)
     const apiOpts  = {
       method: 'POST',
@@ -28,33 +32,18 @@ module.exports = function(grunt) {
 
     function configTest () {
       const optKeys = ['sourceFiles', 'scriptsUrl', 'repo', 'orgSlug', 'projectSlug', 'token']
-      for (var key in optKeys) {
-        if (!(key in options)) {
-          let err = new Error(`Required option '${key}' is missing.`)
-          grunt.log.writeln(err.message)
-          throw err
-        } else {
-          if (options[key] == null) {
-            let err = new Error(`Required option '${key}' is undefined.`)
-            grunt.log.writeln(err.message)
-            throw err
-          }
+      optKeys.forEach(key => {
+        if (options[key] == null) {
+          grunt.fail.warn(`Required configuration setting '${options[key]} is undefined.`)
         }
-      }
-    }
-
-    const commit = () => {
-      return git.getLastCommit((error, commit) => {
-        return commit
       })
     }
 
     function createRelease() {
       const endpoint = `https://sentry.io/api/0/organizations/${options.orgSlug}/releases/`
-
       const body = {
         version: release,
-        dateCreated: Date.toISOString(commit.commitedOn),
+        dateCreated: new Date(commit.committedOn).toISOString(),
         refs: [{
           repository: options.repo,
           commit: commit.hash,
@@ -63,16 +52,16 @@ module.exports = function(grunt) {
         projects: [options.project]
       }
 
-      grunt.log.writeln('Pushing release to Sentry.io')
+      grunt.log.subhead('Pushing release to Sentry.io')
       fetch (endpoint, apiOpts, body)
         .then(response => {
           return response.json()
         })
         .then(json => {
-          grunt.log.writeln(JSON.stringify(json, undefined, 2))
+          grunt.ok.writeln(JSON.stringify(json, undefined, 2))
         })
         .catch(err => {
-          grunt.log.writeln(`Error pushing release: ${err.message}`)
+          grunt.fail.warn(`Error pushing release: ${err.message}`)
           throw err
         })
     }
@@ -90,47 +79,45 @@ module.exports = function(grunt) {
         size: fileObj.size
       }
 
-      grunt.log.writeln('Uploading source maps to Sentry.io')
+      grunt.log.subhead('Uploading source maps to Sentry.io')
       fetch (endpoint, apiOpts, body)
         .then(response => {
           return response.json()
         })
         .then(json => {
-          grunt.log.writeln(JSON.stringify(json, undefined, 2))
+          grunt.ok.writeln(JSON.stringify(json, undefined, 2))
         })
         .catch(err => {
-          grunt.log.writeln(`Error uploading source map: ${err.message}`)
-          throw err
+          grunt.fail.warn(`Error uploading source map: ${err.message}`)
         })
     }
 
     function pushSourceMaps () {
       let i = 1
 
-      options.sourceFiles.forEach(file => {
+      files.forEach(file => {
         file = `${file}.map`
+        filepath = `${cwd}/${file}`
 
         let fileObj = {
           name: file,
           id: i
         }
 
-        const stats = fs.statSync(file)
-        fileObj.timestamp = Date.toISOString(stats.ctimeMs)
+        const stats = fs.statSync(filepath)
+        fileObj.timestamp = new Date(stats.ctimeMs).toISOString()
         fileObj.size = stats.size
 
-        sha1File(file, (err, hash) => {
+        sha1File(filepath, (err, hash) => {
           if (err) {
-            grunt.log.writeln(`Cannot get sha1 hash for ${file}: ${err.message}`)
-            throw err
+            grunt.fail.warn(`Cannot get sha1 hash for ${file}: ${err.message}`)
           }
           fileObj.hash = hash
         })
 
-        fs.open(file, 'r', (err, fd) => {
+        fs.open(filepath, 'r', (err, fd) => {
           if (err) {
-            grunt.log.writeln(`Cannot open ${file}: ${err.message}`)
-            throw err
+            grunt.fail.warn(`Cannot open ${file}: ${err.message}`)
           } else {
             fileObj.file = fd
             uploadMaps(fileObj)
@@ -142,7 +129,19 @@ module.exports = function(grunt) {
     }
 
     configTest()
-    createRelease()
-    pushSourceMaps()
+    let commit = {}
+    Git.Repository.open(cwd)
+      .then(repo => {
+        return repo.getHeadCommit()
+      })
+      .then(head => {
+        commit.hash = head.sha()
+        commit.timestamp = head.timeMs()
+      })
+      .then(() => {
+        createRelease()
+        pushSourceMaps()
+      })
+
   })
 }
