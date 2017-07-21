@@ -1,7 +1,7 @@
 {
   "name": "grunt-sentry-source-maps",
   "description": "Automatically creates release info for and pushes JS source maps to Sentry.io.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "git://github.com/selfagency/grunt-sentry-source-maps",
   "author": "Daniel Sieradski <help@self.agency> (https://self.agency)",
   "repository": {
