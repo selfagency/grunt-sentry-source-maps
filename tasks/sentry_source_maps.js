@@ -51,29 +51,29 @@ module.exports = function(grunt) {
           .then(head => {
             commit.hash = head.sha()
             commit.timestamp = head.timeMs()
-          })
-          .catch(err => {
-            reject(err)
-          })
 
-        const body = {
-          version: release,
-          dateCreated: new Date(commit.timestamp).toISOString(),
-          refs: [{
-            repository: options.repo,
-            commit: commit.hash,
-            project: options.project
-          }],
-          projects: [options.project]
-        }
+            const body = {
+              version: release,
+              dateCreated: new Date(commit.timestamp).toISOString(),
+              refs: [{
+                repository: options.repo,
+                commit: commit.hash,
+                project: options.project
+              }],
+              projects: [options.project]
+            }
 
-        grunt.log.subhead('Pushing release to Sentry.io')
-        fetch (endpoint, apiOpts, JSON.stringify(body))
-          .then(response => {
-            return response.json()
-          })
-          .then(json => {
-            resolve(JSON.stringify(json, undefined, 2))
+            grunt.log.subhead('Pushing release to Sentry.io')
+            fetch (endpoint, apiOpts, JSON.stringify(body))
+              .then(response => {
+                return response.json()
+              })
+              .then(json => {
+                resolve(JSON.stringify(json, undefined, 2))
+              })
+              .catch(err => {
+                reject(err)
+              })
           })
           .catch(err => {
             reject(err)
