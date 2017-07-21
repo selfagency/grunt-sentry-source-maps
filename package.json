@@ -1,7 +1,7 @@
 {
   "name": "grunt-sentry-source-maps",
   "description": "Automatically creates release info for and pushes JS source maps to Sentry.io.",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "homepage": "git://github.com/selfagency/grunt-sentry-source-maps",
   "author": "Daniel Sieradski <help@self.agency> (https://self.agency)",
   "repository": {
@@ -34,6 +34,7 @@
   "dependencies": {
     "abab": "^1.0.3",
     "git-last-commit": "^0.3.0",
+    "nodegit": "^0.18.3",
     "sha1-file": "^1.0.0",
     "whatwg-fetch": "^2.0.3"
   },
