@@ -58,7 +58,7 @@ module.exports = function(grunt) {
 
         const body = {
           version: release,
-          dateCreated: new Date(commit.committedOn).toISOString(),
+          dateCreated: new Date(commit.timestamp).toISOString(),
           refs: [{
             repository: options.repo,
             commit: commit.hash,
