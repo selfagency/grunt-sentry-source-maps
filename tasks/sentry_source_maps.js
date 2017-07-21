@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         const optKeys = ['sourceFiles', 'scriptsUrl', 'repo', 'orgSlug', 'projectSlug', 'token']
         optKeys.forEach(key => {
           if (options[key] == null) {
-            reject(new Error(`Required configuration setting '${options[key]} is undefined.`))
+            reject(new Error(`Required configuration setting '${options[key]}' is undefined.`))
           }
         })
         resolve()
