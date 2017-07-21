@@ -26,13 +26,13 @@ In your project's Gruntfile, add a section named `sentry_source_maps` to the dat
 grunt.initConfig({
   sentry_source_maps: {
     options: {
+      sourceFiles: ['array'],
       scriptsUrl: 'https://yourwebsite.com/path/to/scripts',
       repo: 'your-git-username/your-repo-name',
       orgSlug: 'your-sentry-org-name',
       projectSlug: 'your-sentry-project-slug',
       token: 'your-sentry-api-token'
     },
-    files: ['array']
   },
 });
 ```
@@ -48,11 +48,6 @@ An array of filenames for your bundled scripts that have source maps.
 Type: `String`
 
 The full path to your *online* scripts folder.
-
-#### options.repo
-Type: `String`
-
-The name of your Git repository.
 
 #### options.repo
 Type: `String`

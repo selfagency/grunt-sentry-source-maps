@@ -3,11 +3,7 @@
   "description": "Automatically creates release info for and pushes JS source maps to Sentry.io.",
   "version": "0.1.0",
   "homepage": "git://github.com/selfagency/grunt-sentry-source-maps",
-  "author": {
-    "name": "Daniel Sieradski",
-    "email": "help@self.agency",
-    "url": "https://self.agency"
-  },
+  "author": "Daniel Sieradski <help@self.agency> (https://self.agency)",
   "repository": {
     "type": "git",
     "url": "git://github.com/selfagency/grunt-sentry-source-maps.git"
@@ -18,14 +14,11 @@
   "licenses": [
     {
       "type": "GPL-3.0",
-      "url": "git://github.com/selfagency/grunt-sentry-source-maps/blob/master/LICENSE.TXT"
+      "url": "git://github.com/selfagency/grunt-sentry-source-maps/blob/master/LICENSE.txt"
     }
   ],
   "engines": {
     "node": ">=6.10.2"
-  },
-  "scripts": {
-    "test": "grunt test"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
@@ -43,5 +36,7 @@
     "git-last-commit": "^0.3.0",
     "sha1-file": "^1.0.0",
     "whatwg-fetch": "^2.0.3"
-  }
+  },
+  "main": "tasks/sentry_source_maps.js",
+  "license": "GPL-3.0"
 }
