@@ -108,6 +108,8 @@ module.exports = function(grunt) {
       let i = 1
 
       options.sourceFiles.forEach(file => {
+        file = `${file}.map`
+
         let fileObj = {
           name: file,
           id: i
