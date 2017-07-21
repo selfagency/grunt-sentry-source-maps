@@ -70,14 +70,8 @@ module.exports = function(grunt) {
               })
               .then(json => {
                 resolve(JSON.stringify(json, undefined, 2))
-              })
-              .catch(err => {
-                reject(err)
-              })
-          })
-          .catch(err => {
-            reject(err)
-          })
+              }).catch(err => { reject(err) })
+          }).catch(err => { reject(err) })
       })
     }
 
@@ -103,11 +97,11 @@ module.exports = function(grunt) {
           })
 
           fs.open(filepath, 'r', (err, fd) => {
-            if (err) {
-              reject(err)
-            } else {
+            if (!err) {
               fileObj.file = fd
               resolve(fileObj)
+            } else {
+              reject(err)
             }
           })
 
@@ -138,9 +132,7 @@ module.exports = function(grunt) {
           .then(json => {
             resolve(JSON.stringify(json, undefined, 2))
           })
-          .catch(err => {
-            reject(err)
-          })
+          .catch(err => { reject(err) })
       })
     }
 
@@ -154,12 +146,9 @@ module.exports = function(grunt) {
                 uploadMaps(fileObj)
                   .then(output => {
                     grunt.ok.writeln(output)
-                  })
-              })
-          })
-      })
-      .catch(err => {
-        grunt.fail.warn(err)
-      })
+                  }).catch(err => { grunt.fail.warn(err) })
+              }).catch(err => { grunt.fail.warn(err) })
+          }).catch(err => { grunt.fail.warn(err) })
+      }).catch(err => { grunt.fail.warn(err) })
   })
 }
